@@ -1,0 +1,27 @@
+# Secrets and local config
+.env
+*.env.local
+
+# Runtime database state
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+test_briefing.db
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtualenvs
+venv/
+.venv/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log

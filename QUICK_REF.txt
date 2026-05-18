@@ -1,0 +1,158 @@
+PHASE 1.3 QUICK REFERENCE
+═════════════════════════════════════════════════════════════════════════════════
+
+YOUR TELEGRAM BRIEFING BOT - RANKING ENGINE COMPLETE ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT WAS BUILT
+
+  Phase 1.3: Intelligent Ranking System
+  ────────────────────────────────────
+  
+  Input:  180 fetched & deduplicated stories
+  Output: Top 10 ranked by composite score
+  
+  4-Factor Ranking Algorithm:
+  ├─ Relevance (40%)  - Your interest keywords matched
+  ├─ Virality (30%)   - Community engagement signals  
+  ├─ Depth (20%)      - Technical richness score
+  └─ Novelty (10%)    - Recency boost (exponential decay)
+  
+  Result: Personalized top 10 stories daily
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KEY FILES
+
+  New Code:
+    app/ranking/scorer.py     - 4 scoring classes + composite scorer
+    app/ranking/manager.py    - Ranking orchestration
+  
+  Tests (21, all passing):
+    tests/test_ranking.py     - Comprehensive test suite
+  
+  Documentation:
+    PHASE_1_3_REPORT.md       - Detailed architecture & usage
+    PHASE_1_3_COMPLETE.txt    - Project status summary
+  
+  Demo:
+    demo_rank.py              - Run ranking on live data
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+QUICK START
+
+  1. See it in action:
+     $ cd /Users/saksham/telegram-briefing-agent
+     $ python3 demo_rank.py
+  
+  2. Run tests:
+     $ pytest tests/test_ranking.py -v
+  
+  3. Explore code:
+     $ less PHASE_1_3_REPORT.md
+     $ cat PHASE_1_3_COMPLETE.txt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+API USAGE
+
+  Basic ranking:
+    from app.ranking.manager import RankingManager
+    ranker = RankingManager()
+    ranked = ranker.rank_stories(stories)  # List of (story, score)
+  
+  Top N with breakdowns:
+    results = ranker.get_ranked_with_scores(stories)
+    for item in results[:10]:
+      print(item['story'].title)
+      print(f"  Score: {item['score']:.3f}")
+      print(f"  Breakdown: {item['breakdown']}")
+  
+  Custom weights:
+    from app.ranking.scorer import CompositeScorer
+    scorer = CompositeScorer(
+      interest_keywords=["vLLM", "CUDA"],
+      weight_relevance=0.7,
+      weight_virality=0.15,
+      weight_depth=0.1,
+      weight_novelty=0.05
+    )
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STATISTICS
+
+  Code:
+    - 304 lines: scorer.py
+    - 120 lines: manager.py
+    - 367 lines: tests
+    ─────────────────────
+      791 lines new code
+
+  Tests:
+    - 21 tests total
+    - 100% passing
+    - 6 test classes covering all dimensions
+  
+  Performance:
+    - 180 stories ranked in ~50ms
+    - Memory: negligible
+    - Scaling: O(n) linear
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONFIGURATION (.env)
+
+  Ranking weights (all configurable):
+    RANK_WEIGHT_RELEVANCE=0.4
+    RANK_WEIGHT_VIRALITY=0.3
+    RANK_WEIGHT_DEPTH=0.2
+    RANK_WEIGHT_NOVELTY=0.1
+  
+  Interest keywords (your interests):
+    vLLM, CUDA, distributed systems, agentic AI, robotics, 
+    ML infrastructure, reasoning models, edge AI, MCP, RAG
+  
+  LLM (ready for next phase):
+    LLM_PROVIDER=openrouter
+    LLM_MODEL=claude-3.5-sonnet
+    LLM_API_KEY=[configured]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 1.4 PREVIEW (Next)
+
+  LLM Summarization:
+  ─────────────────
+  
+  For each top 10 story:
+    1. Summarize in 2-3 lines
+    2. Explain why it matters to you
+    3. Add practical implications
+    4. Tag the trend it belongs to
+  
+  Output format:
+    1. Title
+       └─ Summary
+       └─ Why it matters: [personal angle]
+       └─ Action: [what you should do]
+       └─ Trend: [category it belongs to]
+  
+  Timeline: 2-3 hours
+  Status: Ready to start
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NEXT IMMEDIATE STEPS
+
+  1. Run demo to verify everything works
+  2. Adjust ranking weights if desired
+  3. Begin Phase 1.4 (LLM summarization)
+  4. Then Phase 1.5 (Telegram delivery + scheduling)
+
+═════════════════════════════════════════════════════════════════════════════════
+Project Location: /Users/saksham/telegram-briefing-agent
+Status: Phase 1.3 Complete ✅ | Phase 1.4 Ready to Start ⏳
+═════════════════════════════════════════════════════════════════════════════════

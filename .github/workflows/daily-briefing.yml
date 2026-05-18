@@ -1,0 +1,74 @@
+name: Daily Tech News Briefing
+
+on:
+  schedule:
+    # 03:30 UTC = 09:00 IST. GitHub cron can drift up to ~15 min on the free tier.
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore briefing database from previous run
+        uses: actions/cache@v4
+        with:
+          path: data/briefing.db
+          key: briefing-db-${{ github.run_id }}
+          restore-keys: |
+            briefing-db-
+
+      - name: Ensure data directory exists
+        run: mkdir -p data
+
+      - name: Run briefing
+        env:
+          # --- Secrets (configure in repo Settings → Secrets and variables → Actions) ---
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+          # --- LLM config ---
+          LLM_PROVIDER: openrouter
+          LLM_MODEL: anthropic/claude-sonnet-4.6
+
+          # --- App config ---
+          TIMEZONE: Asia/Kolkata
+          DB_PATH: ./data/briefing.db
+          LOG_LEVEL: INFO
+          BRIEFING_HOUR: '9'
+          BRIEFING_MINUTE: '0'
+
+          # --- News source limits (Reddit disabled — no Reddit secrets configured) ---
+          HN_FETCH_LIMIT: '50'
+          REDDIT_FETCH_LIMIT: '0'
+          GITHUB_FETCH_LIMIT: '100'
+          ARXIV_FETCH_LIMIT: '50'
+
+          # --- Ranking weights ---
+          RANK_WEIGHT_RELEVANCE: '0.4'
+          RANK_WEIGHT_VIRALITY: '0.3'
+          RANK_WEIGHT_DEPTH: '0.2'
+          RANK_WEIGHT_NOVELTY: '0.1'
+
+          # --- Output ---
+          ITEMS_PER_BRIEFING: '10'
+        run: python3 main.py run-now
