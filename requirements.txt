@@ -12,4 +12,4 @@ openrouter>=0.9
 tenacity>=8.2
 pytest>=7.4
 pytest-asyncio>=0.21
-pytz
+pytz>=2024.1
