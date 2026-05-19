@@ -2,6 +2,7 @@ name: Daily Tech News Briefing
 
 on:
   schedule:
+    # 03:30 UTC = 09:00 IST. GitHub cron can drift up to ~15 min on the free tier.
     - cron: '30 3 * * *'
   workflow_dispatch:
 
@@ -29,13 +30,16 @@ jobs:
           which python || which python3
           python -c "import sys; print(sys.executable); print('\n'.join(sys.path))"
 
-      - name: Clear pip cache
+      - name: Clear pip cache (safe)
         run: python -m pip cache purge || true
 
-      - name: Install dependencies
+      - name: Install dependencies (use python -m pip)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --force-reinstall -r requirements.txt
+          python -m pip install --no-cache-dir --force-reinstall -r requirements.txt
+
+      - name: Verify pytz is installed (fail early with useful log)
+        run: python -c "import importlib; importlib.import_module('pytz'); import pytz; print('pytz OK', pytz.__version__)"
 
       - name: List installed packages
         run: python -m pip list
@@ -44,7 +48,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: data/briefing.db
-          key: setup-python-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          key: briefing-db-${{ github.run_id }}
           restore-keys: |
             briefing-db-
 
@@ -76,4 +80,4 @@ jobs:
           RANK_WEIGHT_DEPTH: '0.2'
           RANK_WEIGHT_NOVELTY: '0.1'
           ITEMS_PER_BRIEFING: '10'
-        run: python3 main.py run-now
+        run: python -u main.py run-now
