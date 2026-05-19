@@ -23,14 +23,22 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: Show Python info
+        run: |
+          python --version
+          which python || which python3
+          python -c "import sys; print(sys.executable); print('\n'.join(sys.path))"
+
       - name: Clear pip cache
-        run: pip cache purge
+        run: python -m pip cache purge || true
 
       - name: Install dependencies
-        run: pip install --force-reinstall -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --force-reinstall -r requirements.txt
 
       - name: List installed packages
-        run: pip list
+        run: python -m pip list
 
       - name: Restore briefing database from previous run
         uses: actions/cache@v4
@@ -42,6 +50,9 @@ jobs:
 
       - name: Ensure data directory exists
         run: mkdir -p data
+
+      - name: Show repo files (debug)
+        run: ls -la
 
       - name: Run briefing
         env:
