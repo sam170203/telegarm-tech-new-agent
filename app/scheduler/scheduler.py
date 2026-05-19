@@ -6,7 +6,18 @@ from typing import Awaitable, Callable
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from pytz import timezone as pytz_timezone
+
+# Prefer stdlib zoneinfo (Python 3.9+) and fall back to pytz if unavailable.
+try:
+    from zoneinfo import ZoneInfo
+
+    def _tz(tz_name: str):
+        return ZoneInfo(tz_name)
+except Exception:
+    from pytz import timezone as pytz_timezone
+
+    def _tz(tz_name: str):
+        return pytz_timezone(tz_name)
 
 from app.config.settings import settings
 from app.utils.logger import setup_logger
@@ -28,7 +39,7 @@ class BriefingScheduler:
         self.hour = hour if hour is not None else settings.briefing_hour
         self.minute = minute if minute is not None else settings.briefing_minute
         self.tz = tz or settings.timezone
-        self.scheduler = AsyncIOScheduler(timezone=pytz_timezone(self.tz))
+        self.scheduler = AsyncIOScheduler(timezone=_tz(self.tz))
 
     async def _wrapped(self):
         """Invoke the callback with broad error handling so the scheduler keeps running."""
@@ -39,7 +50,7 @@ class BriefingScheduler:
 
     async def run_forever(self):
         """Start the scheduler and block until SIGINT/SIGTERM."""
-        trigger = CronTrigger(hour=self.hour, minute=self.minute, timezone=pytz_timezone(self.tz))
+        trigger = CronTrigger(hour=self.hour, minute=self.minute, timezone=_tz(self.tz))
         self.scheduler.add_job(self._wrapped, trigger, id="daily_briefing", replace_existing=True)
         self.scheduler.start()
 
